@@ -4,6 +4,19 @@ var myWalletsCtrl = function($scope, $sce, $timeout, walletService) {
 	$scope.viewModal = new Modal(document.getElementById("viewWalletDetails"));
 	$scope.removeModal = new Modal(document.getElementById("removeWallet"));
 	$scope.tokens = Token.popTokens;
+	if(localStorage.getItem("localTokens")) {
+		const actualLocalToken = localStorage.getItem("localTokens");
+		JSON.parse(actualLocalToken).forEach(token => {
+			let newToken = {
+				address: token.contractAddress,
+				decimal: token.decimal,
+				symbol: token.symbol,
+				type: "custom"
+			}
+			$scope.tokens.push(newToken);
+		});
+	}
+
 	$scope.currentPagination = 25;
 	$scope.currentIndex = 0;
 	$scope.tokensShown = $scope.tokens.slice(
