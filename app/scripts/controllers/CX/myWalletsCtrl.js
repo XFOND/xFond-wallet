@@ -11,6 +11,8 @@ var myWalletsCtrl = function($scope, $sce, $timeout, walletService) {
 		$scope.currentPagination
 	);
 
+	$scope.searchToken = '';
+
 	$scope.qtyPerPage = 25;
 
 	$scope.walletsContainer = document.getElementById("walletsContainer");
@@ -78,9 +80,9 @@ var myWalletsCtrl = function($scope, $sce, $timeout, walletService) {
 	// Update height when height is changed and keep watching height
 	$scope.$watch('walletsContainer.clientHeight', function() {
 		if($scope.allWatchOnly.length !== 0) {
-			angular.element($scope.sideBarTokens).css('maxHeight', (($scope.walletsContainer.clientHeight - 167.200) + 'px'));
+			angular.element($scope.sideBarTokens).css('maxHeight', (($scope.walletsContainer.clientHeight - 208) + 'px'));
 		} else {
-			angular.element($scope.sideBarTokens).css('maxHeight', (($scope.walletsContainer.clientHeight - 237) + 'px'));
+			angular.element($scope.sideBarTokens).css('maxHeight', (($scope.walletsContainer.clientHeight - 278.3) + 'px'));
 		}
 	});
 
