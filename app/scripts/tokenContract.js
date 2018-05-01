@@ -21,7 +21,7 @@ tokenContract.prototype.getDataString = function(func, inputs) {
  * @param  {type} callback description
  * @return {type}          description
  */
-tokenContract.prototype.getAllBalance = function(to, params) {
+tokenContract.prototype.getAllBalance = function(to, params, callback) {
   const address = params.address ? params.address : '';
   const name = params.name ? params.name : true;
   const website = params.website ? params.website : true;
@@ -32,9 +32,9 @@ tokenContract.prototype.getAllBalance = function(to, params) {
     to: to,
     data: this.getDataString(this.tokensAbi.getAllBalance, [address, name, website, email, count])
   }, function(data) {
-    if(data.error || data.data === '0x') console.log(data, "error");
+    if(data.error || data.data === '0x') console.log(data.message);
     else {
-      return ethFuncs.decode(data.data);
+      return callback(data.data);
     };
   })
 };

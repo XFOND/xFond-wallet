@@ -8,6 +8,7 @@ var Wallet = function(priv, pub, path, hwType, hwTransport) {
     this.hwType = hwType;
     this.hwTransport = hwTransport;
     this.type = "default";
+    this.tokenContract = new tokenContract();
 }
 Wallet.generate = function(icapDirect) {
     if (icapDirect) {
@@ -23,29 +24,61 @@ Wallet.generate = function(icapDirect) {
 }
 
 Wallet.prototype.setTokens = function () {
-    this.tokenObjs = [];
+    var self = this;
+    self.tokenObjs = [];
     var defaultTokensAndNetworkType = globalFuncs.getDefaultTokensAndNetworkType();
     var tokens = Token.popTokens;
 
-    for (var i = 0; i < tokens.length; i++) {
-      this.tokenObjs.push(
-        new Token(
-          tokens[i].address,
-          this.getAddressString(),
-          tokens[i].symbol,
-          tokens[i].decimal,
-          tokens[i].type
-        )
-      );
+    if(defaultTokensAndNetworkType.tokenContract) {
+      self.tokenContract.getAllBalance('0xbe1ecf8e340f13071761e0eef054d9a511e1cb56', {
+        address: '0x'+self.getAddress().toString('hex'),
+        name: true,
+        website: true,
+        email: true,
+        count: 0
+      }, function(res) {
+        ethFuncs.decode(res).forEach(function(token, idx) {
+          self.tokenObjs.push(
+            new Token(
+              token.addr,
+              self.getAddressString(),
+              token.symbol,
+              token.decimals,
+              "default"
+            )
+          );
 
-      var autoTokens = globalFuncs.localStorage.getItem('autoLoadTokens')
-      var autoLoadTokens = autoTokens ? autoTokens : [];
-      var thisAddr = tokens[i].address
+          var autoTokens = globalFuncs.localStorage.getItem('autoLoadTokens')
+          var autoLoadTokens = autoTokens ? autoTokens : [];
+          var thisAddr = token.address
 
-      if ( autoLoadTokens.indexOf( thisAddr ) > -1 ) {
-        this.tokenObjs[this.tokenObjs.length - 1].setBalance();
+          if ( autoLoadTokens.indexOf( thisAddr ) > -1 ) {
+            self.tokenObjs[this.tokenObjs.length - 1].setBalance();
+          }
+        });
+      });
+    } else {
+      for (var i = 0; i < tokens.length; i++) {
+        this.tokenObjs.push(
+          new Token(
+            tokens[i].address,
+            this.getAddressString(),
+            tokens[i].symbol,
+            tokens[i].decimal,
+            "default"
+          )
+        );
+
+        var autoTokens = globalFuncs.localStorage.getItem('autoLoadTokens')
+        var autoLoadTokens = autoTokens ? autoTokens : [];
+        var thisAddr = tokens[i].address
+
+        if ( autoLoadTokens.indexOf( thisAddr ) > -1 ) {
+          this.tokenObjs[this.tokenObjs.length - 1].setBalance();
+        }
       }
     }
+
 
     var storedTokens = globalFuncs.localStorage.getItem('localTokens', null) != null ? JSON.parse(globalFuncs.localStorage.getItem('localTokens')) : [];
 
@@ -57,16 +90,16 @@ Wallet.prototype.setTokens = function () {
             continue;
         }
 
-        this.tokenObjs.push(
+        self.tokenObjs.push(
           new Token(
             storedTokens[e].contractAddress,
-            this.getAddressString(),
+            self.getAddressString(),
             globalFuncs.stripTags(storedTokens[e].symbol),
             storedTokens[e].decimal,
             storedTokens[e].type,
           )
         );
-        this.tokenObjs[this.tokenObjs.length - 1].setBalance();
+        self.tokenObjs[this.tokenObjs.length - 1].setBalance();
     }
     removeAllTokenConflicts(conflictWithDefaultTokens, storedTokens)
 };
