@@ -8,7 +8,6 @@ var Wallet = function(priv, pub, path, hwType, hwTransport) {
     this.hwType = hwType;
     this.hwTransport = hwTransport;
     this.type = "default";
-    this.tokenContract = new tokenContract();
 }
 Wallet.generate = function(icapDirect) {
     if (icapDirect) {
@@ -24,14 +23,15 @@ Wallet.generate = function(icapDirect) {
 }
 
 Wallet.prototype.setTokens = function () {
+    var tokenC = new tokenContract();
     var self = this;
     self.tokenObjs = [];
     var defaultTokensAndNetworkType = globalFuncs.getDefaultTokensAndNetworkType();
     var tokens = Token.popTokens;
 
     if(defaultTokensAndNetworkType.tokenContract) {
-      self.tokenContract.getAllBalance('0xbe1ecf8e340f13071761e0eef054d9a511e1cb56', {
-        address: '0x'+self.getAddress().toString('hex'),
+      tokenC.getAllBalance('0xbe1ecf8e340f13071761e0eef054d9a511e1cb56', {
+        address: self.getAddressString(),
         name: true,
         website: true,
         email: true,
@@ -44,7 +44,8 @@ Wallet.prototype.setTokens = function () {
               self.getAddressString(),
               token.symbol,
               token.decimals,
-              "default"
+              "default",
+              token.balance
             )
           );
 
