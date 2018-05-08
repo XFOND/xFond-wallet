@@ -317,11 +317,11 @@ nodes.nodeList = {
         'blockExplorerTX': 'https://explorer.wanchain.org/block/trans/[[txHash]]',
         'blockExplorerAddr': 'https://explorer.wanchain.org/block/trans/[[address]]',
         'type': nodes.nodeTypes.WAN,
-        'eip155': ,
-        'chainId': ,
+        'eip155': true,
+        'chainId': 5718350,
         'tokenList': require('./tokens/wanTokens.json'),
         'abiList': require('./abiDefinitions/wanAbi.json'),
-        'estimateGas': ,
+        'estimateGas': true,
         'service': 'wanchain.org',
         'lib': new nodes.customNode('', '')
     }
